@@ -13,4 +13,4 @@
 
 这样第一个“我”是传入的参数 第二个“我”是生成图片的文件名
 
-![实例图](图片链接 "optional title")
+![实例图](https://github.com/SaudM/PhpCard/blob/master/解.png)
