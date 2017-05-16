@@ -12,3 +12,5 @@
         php topcard.php 我 > 我.png
 
 这样第一个“我”是传入的参数 第二个“我”是生成图片的文件名
+
+![实例图](图片链接 "optional title")
