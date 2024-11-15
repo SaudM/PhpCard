@@ -10,7 +10,11 @@ require_once "php/ImageCrop.php";
 
 
 $doc = new DOMDocument();
-$doc->load('xml/resource.xml');
+if (file_exists('xml/resource.xml')) {
+    $doc->load('xml/resource.xml');
+} else {
+    throw new Exception("File not found: xml/resource.xml");
+}
 $cards = $doc->getElementsByTagName("card");
 
 //解析haed标签
@@ -260,8 +264,7 @@ function draw_book($im, $y, $li)
  * @param $url
  * @return mixed
  */
-function retrieve($url)
-{
+function retrieve(string $url): string {
     $path = parse_url($url);
     $str = explode('.', $path['path']);
     return $str[0];
@@ -282,8 +285,8 @@ function draw_images($im, $src, $y, $radius)
     $filename = retrieve($newsrc);
     $ic = new ImageCrop($newsrc, $filename);
     $ic->Crop(560, 288, 1);
-    $ic->SaveAlpha();
-    $ic->destory();
+    $ic->saveAlpha();
+    $ic->destroy();
 
     $img = imagecreatefrompng($filename . ".png");
 
@@ -321,12 +324,9 @@ function draw_QR($im, $y)
  * @param $image_height
  * @param $radius
  */
-function draw_card($im, $dst_x, $y, $image_width, $image_height, $radius)
-{
-
+function draw_card($im, int $dst_x, int $y, int $image_width, int $image_height, int $radius): void {
     imagebackgroundmycard($im, $dst_x, $y, $image_width, $image_height, $radius);
 }
-
 
 /**
  * 画左边的小标记
@@ -404,7 +404,10 @@ function draw_li($im, $y, $li)
 {
 
     $src = "img/ic_img_lizi.png";
-    $img = imagecreatefrompng($src);
+    $img = @imagecreatefrompng($src);
+    if (!$img) {
+        throw new Exception("Failed to load image: " . $src);
+    }
     imagecopy($im, $img, 100, $y, 0, 0, 54, 54);
     return drawmintext($im, $y, $li);
 
@@ -479,7 +482,7 @@ function draw_title($im, $title, $y)
  * @param $str
  * @return int
  */
-function  titlesize($im, $title)
+function titlesize($im, $title)
 {
 
     $fontsize = 26;
@@ -555,15 +558,14 @@ function draw_txt_to($card, $pos, $str, $iswrite)
             }
 
             $tmp_str_len = mb_strlen($temp_string);
-            $s = mb_substr($temp_string, $tmp_str_len-1, 1);//取零时字符串最后一位字符
+            $s = mb_substr($temp_string, $tmp_str_len - 1, 1);//取零时字符串最后一位字符
 
-                if (is_firstfuhao($s)) {//判断零时字符串的最后一个字符是不是可以放在见面
-                    //讲最后一个字符用“_”代替。指针前移动一位。重新取被替换的字符。
-                    $temp_string=rtrim($temp_string,$s);
-                    $i--;
-                }
+            if (is_firstfuhao($s)) {//判断零时字符串的最后一个字符是不是可以放在见面
+                //讲最后一个字符用“_”代替。指针前移动一位。重新取被替换的字符。
+                $temp_string = rtrim($temp_string, $s);
+                $i--;
+            }
 //            }
-
 
 
 //            计算行高，和行数。
